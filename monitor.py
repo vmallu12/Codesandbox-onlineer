@@ -7,7 +7,7 @@ from datetime import datetime
 # =====================================
 
 URLS = [
-    "https://codesandbox.io/p/devbox/vigilant-meadow-55tht6"
+    "https://codesandbox.io/p/devbox/h4mdt2"
 ]
 
 # Ping every 60 sec
