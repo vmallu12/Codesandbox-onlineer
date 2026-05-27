@@ -1,84 +1,43 @@
-# =========================================
-# CodeSandbox Keep-Alive Monitor
-# =========================================
-# Install:
-# pip install requests schedule
-#
-# Run:
-# python monitor.py
-#
-# This script:
-# ✅ Pings your CodeSandbox every few minutes
-# ✅ Keeps it active
-# ✅ Auto restarts monitoring if error
-# ✅ Logs status
-#
-# Replace YOUR_CODESANDBOX_URL with your sandbox URL
-# Example:
-# https://abcd1234.csb.app
-# =========================================
-
 import requests
 import time
-import schedule
 from datetime import datetime
 
 # =========================
-# SETTINGS
+# YOUR CODESANDBOX URL
 # =========================
 
-SANDBOX_URL = "https://YOUR_CODESANDBOX_URL.csb.app"
-
-PING_INTERVAL_MINUTES = 5
-
-# Optional:
-# Add more endpoints if needed
 URLS = [
-    SANDBOX_URL,
+    "https://YOUR-SANDBOX.csb.app"
 ]
 
-# =========================
-# FUNCTIONS
-# =========================
+# Ping every 300 sec (5 min)
+PING_DELAY = 300
 
-def log(msg):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{now}] {msg}")
 
-def ping_site(url):
+def log(text):
+    now = datetime.now().strftime("%H:%M:%S")
+    print(f"[{now}] {text}")
+
+
+def ping(url):
     try:
-        response = requests.get(url, timeout=15)
+        r = requests.get(url, timeout=20)
 
-        if response.status_code == 200:
+        if r.status_code == 200:
             log(f"ONLINE ✅ {url}")
+
         else:
-            log(f"STATUS {response.status_code} ⚠️ {url}")
+            log(f"STATUS {r.status_code} ⚠️ {url}")
 
     except Exception as e:
         log(f"OFFLINE ❌ {url}")
         log(str(e))
 
-def monitor():
-    log("Running monitor...")
 
-    for url in URLS:
-        ping_site(url)
-
-# =========================
-# START
-# =========================
-
-log("CodeSandbox Monitor Started 🚀")
-
-monitor()
-
-schedule.every(PING_INTERVAL_MINUTES).minutes.do(monitor)
+log("Monitor Started 🚀")
 
 while True:
-    try:
-        schedule.run_pending()
-        time.sleep(1)
+    for url in URLS:
+        ping(url)
 
-    except Exception as e:
-        log(f"MAIN LOOP ERROR: {e}")
-        time.sleep(10)
+    time.sleep(PING_DELAY)
